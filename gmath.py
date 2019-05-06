@@ -2,7 +2,7 @@ import math
 from display import *
 
 
-  ## IMPORANT NOTE
+  # IMPORANT NOTE
 
   # Ambient light is represeneted by a color value
 
@@ -21,27 +21,49 @@ COLOR = 1
 SPECULAR_EXP = 4
 
 #lighting functions
-# returns a [co,lo,r]
 def get_lighting(normal, view, ambient, light, areflect, dreflect, sreflect ):
-    ambient = calculate_ambient(light, areflect)
-    specular = calculate_specular(light, dreflect, view, normal)
-    diffuse = calculate_diffuse( light, dreflect, normal)
-    return ambient + diffuse + specular
+    color = []
 
+    normalize(normal)
+    normalize(light[LOCATION])
+    normalize(view)
+
+    a = calculate_ambient(ambient, areflect)
+    d = calculate_diffuse(light, dreflect, normal)
+    s = calculate_specular(light, sreflect, view, normal)
+
+    [color.append( a[index] + d[index] + s[index]) for index in range(3)]
+
+    return limit_color(color)
 
 def calculate_ambient(alight, areflect):
-    return limit_color( alight[0] * areflect )
+    ambient = []
+    [ambient.append(int(alight[i] * areflect[i])) for i in range(3)]
+    return limit_color(ambient)
+
 
 def calculate_diffuse(light, dreflect, normal):
-    return limit_color(dreflect * normalize(normal) * normalize(light[1]))
+    diffuse = []
+    dot = dot_product( light[LOCATION], normal)
+    [diffuse.append(light[COLOR][i] * dreflect[i] * dot) for i in range(3)]
+    return limit_color(diffuse)
 
 def calculate_specular(light, sreflect, view, normal):
-    spec = light[2] * sreflect * (2*normalize(normal)* dot_product(normalize(normal), normalize(light)-calculate_normal(light)))
-    spec = spec ** SPECULAR_EXP
-    return limit_color(spec)
+    c1 = []
+    c2 = []
 
+    cos1 = 2 * dot_product(light[LOCATION], normal)
+    [c1.append( normal[i] * cos1 - light[LOCATION][i]) for i in range(3)]
+
+    res = max((dot_product(c1, view)) , 0 )
+    res = pow(res, SPECULAR_EXP)
+    [c2.append(light[COLOR][i] * sreflect[i] * res) for i in range(3)]
+
+    return limit_color(c2)
+
+###########
 def limit_color(color):
-    return clamp (color, 0, 255)
+    return [ int((max(0, min(x, 255)))) for x in color]
 
 #vector functions
 #normalize vetor, should modify the parameter
@@ -51,6 +73,7 @@ def normalize(vector):
                            vector[2] * vector[2])
     for i in range(3):
         vector[i] = vector[i] / magnitude
+    return vector
 
 #Return the dot porduct of a . b
 def dot_product(a, b):
