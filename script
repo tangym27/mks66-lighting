@@ -9,9 +9,6 @@ x 20
 box
 0 0 0 200 100 400
 display
-save
-robot1.png
-
 #clear everything, test sphere
 clear
 pop
@@ -21,8 +18,6 @@ move
 sphere
 0 0 0 200
 display
-save
-robot2.png
 #clear everything, test sphere again
 clear
 rotate
@@ -32,8 +27,6 @@ y 30
 sphere
 0 0 0 200
 display
-save
-robot3.png
 #clear everything, test torus
 clear
 pop
@@ -43,8 +36,6 @@ move
 torus
 0 0 0 50 150
 display
-save
-robot4.png
 #clear everything, test torus again
 clear
 rotate
@@ -56,8 +47,6 @@ x 45
 torus
 0 0 0 75 150
 display
-save
-robot5.png
 clear
 pop
 #BODY
